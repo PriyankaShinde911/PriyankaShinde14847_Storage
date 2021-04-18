@@ -1,0 +1,53 @@
+1. Display all the information of the EMP table?
+MYSQL-> 	select * from emp;
+
+MONGODB->	db.emp.find().pretty();
+
+2. Display unique Jobs from EMP table?
+MYSQL-> 	select distinct job from emp;
+
+		select job from emp group by job;
+
+MONGODB->	db.emp.distinct('JOB');
+
+3. List the emps in the asc order of their Salaries?
+MYSQL-> 	select empno,ename,sal from emp order by sal;
+
+MONGODB->	db.emp.find({},{'EMPNO':1,'ENAME':1,'SAL':1,'_id':0}).sort({'SAL':1});
+
+4. List the details of the emps in asc order of the Dptnos and desc of Jobs?
+MYSQL-> 	select empno,ename,deptno,job from emp order by deptno,job desc;
+
+MONGODB->	db.emp.find({},{'EMPNO':1,'ENAME':1,'DEPTNO':1,'JOB':1,'_id':0}).sort({'DEPTNO':1,'JOB':-1});
+
+5. Display all the unique job groups in the descending order?
+MYSQL-> 	select distinct job from emp order by job desc;
+
+
+MONGODB->	db.emp.distinct('JOB').sort({'job': -1});
+
+6. Display all the details of all ‘Mgrs’
+MYSQL-> 	
+MONGODB->	db.emp.find({JOB:'MANAGER'},{'_id':0}).pretty();
+
+7. List the emps who joined before 1981
+MYSQL-> 	
+
+	db.emp.insert({  EMPNO:7569,   ENAME:'SMITH23',   JOB:'CLERK', MGR :7902,
+	HIREDATE :ISODate("1965-01-31T05:00:00Z"), SAL:  800, COMM :null, DEPTNO :20});
+
+MONGODB	->	db.emp.find( { HIREDATE: { $lt: new Date('1981-01-01') } } ).pretty();
+
+8. List the Empno, Ename, Sal, Daily sal of all emps in the asc order of Annsal
+MYSQL-> 	select empno ,ename ,sal,sal/30,12*sal annsal from emp order by annsal asc;
+
+MONGODB->	db.emp.aggregate([{$project:{"_id":0,"EMPNO":1,"ENAME":1,"SAL":1,
+		"DAILY_SAL":{$divide: ["$SAL",30]},"ANN_SAL":{$multiply: ["$SAL",12]} }},
+ 		{$sort: {ANN_SAL:1}}]);
+
+9. Display the Empno, Ename, job, Hiredate, Exp of all Mgrs
+MYSQL-> 	select empno,ename ,job,hiredate, (datediff(NOW(),hiredate))/365 exp
+
+		 from emp where empno in (select mgr from emp);
+
+MONGODB->	
